@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Color Test</title>
+	<style type="text/css">
+		#canvas {
+			width: 155px;
+			height: 70px;
+			border: 3px solid black;
+			border-radius: 10px;
+			background-color: white;
+			margin-bottom: 10px;
+		}
+		.progress {
+			height: 1em;
+		}
+		#red .progress {
+			background-color: red;
+		}
+		#green .progress {
+			background-color: green;
+		}
+		#blue .progress {
+			background-color: blue;
+		}
+		td:nth-child(3) {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+<div id="canvas"></div>
+<table>
+	<col width="20">
+	<col width="35">
+	<col width="100">
+	<tr id="red"><td><label>R</label></td><td class="value">0</td><td><div class="progress"></div></td></tr>
+	<tr id="green"><td><label>G</label></td><td class="value">0</td><td><div class="progress"></div></td></tr>
+	<tr id="blue"><td><label>B</label></td><td class="value">0</td><td><div class="progress"></div></td></tr>
+</table>
+</body>
+<footer>
+	<script type="text/javascript">
+
+		var max = 240;
+		var min = 50;
+		var period = 15;
+
+		var buildStruct = function(id) {
+			return {
+				value: 0,
+				elements: {
+					value: document.querySelector('#' + id + ' .value'),
+					progress: document.querySelector('#' + id + ' .progress')
+				}
+			};
+		}
+
+		var canvas = document.getElementById('canvas');
+		var red = buildStruct('red');
+		var green = buildStruct('green');
+		var blue = buildStruct('blue');
+		var colors = [red, green, blue];
+		colors.index = 0;
+		colors.direction = 'downup';
+		red.value = max;
+		green.value = min;
+		blue.value = min;
+
+
+		var drawColors = function() {
+			colors.forEach(function(color){
+				color.elements.value.textContent = color.value;
+				color.elements.progress.style.width = (100 * color.value / 255) + 'px';
+			});
+			canvas.style.backgroundColor = 'rgb(' + red.value + ',' + green.value + ',' + blue.value + ')';
+		};
+		drawColors();
+
+		var getNextIndex = function() {
+			return colors.index + 1 >= colors.length ? 0 : colors.index + 1;
+		};
+
+		setInterval(function(){
+			var current = colors[colors.index];
+			var nextIndex = getNextIndex();
+			var next = colors[nextIndex];
+
+			// only decrease current if next is at max
+			if(next.value === max) {
+				// decrease current
+				current.value--;
+				if(current.value === min) {
+					colors.index = nextIndex;
+				}
+			} else {
+				// increase next
+				next.value++;
+			}
+
+			drawColors();
+		}, period);
+
+	</script>
+</footer>
+</html>
